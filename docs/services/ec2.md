@@ -679,8 +679,10 @@ file inside the Floci container, for example:
 The file is read once when EC2 starts. Each entry needs a unique ID and name
 within its region and at least one IPv4 CIDR. CIDRs are normalized to network
 blocks; repeated or equivalent blocks within one list are rejected. Entries
-cannot replace the built-in lists. Invalid or unreadable files prevent startup
-when EC2 is enabled; disabled EC2 does not read the catalog. Configured lists
+cannot replace the built-in lists, so a commercial-region entry that reuses
+`pl-3b927c52` or `com.amazonaws.global.cloudfront.origin-facing` is rejected.
+Invalid or unreadable files prevent startup when EC2 is enabled; disabled EC2
+does not read the catalog. Configured lists
 have the same AWS ownership, read-only behavior, security-group reference
 validation and describe/entry responses as the built-in lists. Both configured
 and built-in CIDRs participate in security-group policy evaluation and firewall
