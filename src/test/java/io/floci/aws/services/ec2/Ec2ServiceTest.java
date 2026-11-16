@@ -7699,7 +7699,7 @@ class Ec2ServiceTest {
         assertEquals(List.of("192.0.2.0/24"), service.describePrefixLists("eu-west-1", List.of(id), Map.of())
                 .getFirst().getCidrs());
         assertEquals("192.0.2.0/24", service.getManagedPrefixListEntries("eu-west-1", id, null).getFirst().getCidr());
-        assertEquals(3, service.describeManagedPrefixLists("eu-west-1", List.of(), Map.of()).size());
+        assertEquals(4, service.describeManagedPrefixLists("eu-west-1", List.of(), Map.of()).size());
         assertEquals("InvalidPrefixListID.NotFound", assertThrows(AwsException.class,
                 () -> service.describeManagedPrefixLists("us-east-1", List.of(id), Map.of())).getErrorCode());
         assertEquals("UnsupportedOperation", assertThrows(AwsException.class,
@@ -7933,15 +7933,33 @@ class Ec2ServiceTest {
         service.createManagedPrefixList("us-east-1", "corp", "IPv4", 5, List.of(), List.of());
 
         List<ManagedPrefixList> east = service.describeManagedPrefixLists("us-east-1", List.of(), Map.of());
-        assertEquals(3, east.size());
+        assertEquals(4, east.size());
         assertTrue(east.stream().anyMatch(l -> "com.amazonaws.us-east-1.s3".equals(l.getPrefixListName())));
         assertTrue(east.stream().anyMatch(l -> "corp".equals(l.getPrefixListName())));
 
-        // The customer list belongs to us-east-1; only the AWS-managed pair shows up elsewhere.
+        // The customer list belongs to us-east-1; only the AWS-managed lists show up elsewhere.
         List<ManagedPrefixList> west = service.describeManagedPrefixLists("us-west-2", List.of(), Map.of());
-        assertEquals(2, west.size());
+        assertEquals(3, west.size());
         assertTrue(west.stream().allMatch(ManagedPrefixList::isAwsManaged));
         assertTrue(west.stream().anyMatch(l -> "com.amazonaws.us-west-2.s3".equals(l.getPrefixListName())));
+    }
+
+    @Test
+    void cloudFrontOriginFacingListIsAwsManagedWhereCloudFrontExists() {
+        Ec2Service service = prefixListService();
+        Map<String, List<String>> byName = Map.of("prefix-list-name",
+                List.of("com.amazonaws.global.cloudfront.origin-facing"));
+
+        ManagedPrefixList list = service.describeManagedPrefixLists("eu-west-1", List.of(), byName).getFirst();
+        assertEquals("pl-3b927c52", list.getPrefixListId());
+        assertEquals("AWS", list.getOwnerId());
+        assertTrue(list.isAwsManaged());
+        assertEquals("arn:aws:ec2:eu-west-1:aws:prefix-list/pl-3b927c52", list.getPrefixListArn());
+        assertFalse(service.getManagedPrefixListEntries("eu-west-1", "pl-3b927c52", null).isEmpty());
+        assertEquals("UnsupportedOperation", assertThrows(AwsException.class,
+                () -> service.deleteManagedPrefixList("eu-west-1", "pl-3b927c52")).getErrorCode());
+
+        assertTrue(service.describeManagedPrefixLists("us-gov-west-1", List.of(), byName).isEmpty());
     }
 
     @Test

@@ -90,6 +90,33 @@ class Ec2ManagedPrefixListIntegrationTest {
     }
 
     @Test
+    @Order(3)
+    void describeIncludesAwsManagedCloudFrontOriginFacingList() {
+        given()
+            .formParam("Action", "DescribeManagedPrefixLists")
+            .formParam("Filter.1.Name", "prefix-list-name")
+            .formParam("Filter.1.Value.1", "com.amazonaws.global.cloudfront.origin-facing")
+            .header("Authorization", AUTH_HEADER)
+        .when()
+            .post("/")
+        .then()
+            .statusCode(200)
+            .body("DescribeManagedPrefixListsResponse.prefixListSet.item.prefixListId", equalTo("pl-3b927c52"))
+            .body("DescribeManagedPrefixListsResponse.prefixListSet.item.ownerId", equalTo("AWS"))
+            .body("DescribeManagedPrefixListsResponse.prefixListSet.item.addressFamily", equalTo("IPv4"));
+
+        given()
+            .formParam("Action", "GetManagedPrefixListEntries")
+            .formParam("PrefixListId", "pl-3b927c52")
+            .header("Authorization", AUTH_HEADER)
+        .when()
+            .post("/")
+        .then()
+            .statusCode(200)
+            .body("GetManagedPrefixListEntriesResponse.entrySet.item.size()", greaterThan(0));
+    }
+
+    @Test
     @Order(4)
     void getEntriesReturnsTheInitialEntry() {
         given()

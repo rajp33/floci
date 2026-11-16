@@ -92,6 +92,21 @@ create_prefix_list() {
     [ "$owner" = "AWS" ]
 }
 
+@test "EC2: describe managed prefix lists exposes the AWS-managed CloudFront origin-facing list" {
+    run aws_cmd ec2 describe-managed-prefix-lists \
+        --filters "Name=prefix-list-name,Values=com.amazonaws.global.cloudfront.origin-facing"
+    assert_success
+    id=$(json_get "$output" '.PrefixLists[0].PrefixListId')
+    [ "$id" = "pl-3b927c52" ]
+    owner=$(json_get "$output" '.PrefixLists[0].OwnerId')
+    [ "$owner" = "AWS" ]
+
+    run aws_cmd ec2 get-managed-prefix-list-entries --prefix-list-id "$id"
+    assert_success
+    count=$(json_get "$output" '.Entries | length')
+    [ "$count" -gt 0 ]
+}
+
 @test "EC2: get managed prefix list entries" {
     create_prefix_list
 
