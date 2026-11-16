@@ -655,8 +655,8 @@ matching how AWS itself responds.
 
 Two AWS-managed prefix lists exist in every region without being created —
 `com.amazonaws.<region>.s3` (`pl-63a5400a`) and `com.amazonaws.<region>.dynamodb`
-(`pl-02cd2c6b`) — matching the gateway endpoint services on AWS. In the partitions where
-CloudFront exists, every region also has `com.amazonaws.global.cloudfront.origin-facing`
+(`pl-02cd2c6b`) — matching the gateway endpoint services on AWS. Every region of the commercial
+`aws` partition also has `com.amazonaws.global.cloudfront.origin-facing`
 (`pl-3b927c52`), the list of CloudFront's origin-facing servers. They are owned by `AWS`,
 read-only, and served by both `DescribePrefixLists` and `DescribeManagedPrefixLists`;
 modifying or deleting one returns `UnsupportedOperation`. Their entries are a representative

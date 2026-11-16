@@ -7937,7 +7937,6 @@ class Ec2ServiceTest {
         assertTrue(east.stream().anyMatch(l -> "com.amazonaws.us-east-1.s3".equals(l.getPrefixListName())));
         assertTrue(east.stream().anyMatch(l -> "corp".equals(l.getPrefixListName())));
 
-        // The customer list belongs to us-east-1; only the AWS-managed lists show up elsewhere.
         List<ManagedPrefixList> west = service.describeManagedPrefixLists("us-west-2", List.of(), Map.of());
         assertEquals(3, west.size());
         assertTrue(west.stream().allMatch(ManagedPrefixList::isAwsManaged));
@@ -7945,7 +7944,7 @@ class Ec2ServiceTest {
     }
 
     @Test
-    void cloudFrontOriginFacingListIsAwsManagedWhereCloudFrontExists() {
+    void cloudFrontOriginFacingListIsAwsManagedInTheCommercialPartition() {
         Ec2Service service = prefixListService();
         Map<String, List<String>> byName = Map.of("prefix-list-name",
                 List.of("com.amazonaws.global.cloudfront.origin-facing"));
@@ -7960,6 +7959,7 @@ class Ec2ServiceTest {
                 () -> service.deleteManagedPrefixList("eu-west-1", "pl-3b927c52")).getErrorCode());
 
         assertTrue(service.describeManagedPrefixLists("us-gov-west-1", List.of(), byName).isEmpty());
+        assertTrue(service.describeManagedPrefixLists("cn-north-1", List.of(), byName).isEmpty());
     }
 
     @Test
