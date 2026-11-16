@@ -2014,7 +2014,7 @@ public class Ec2Service implements ContainerTeardown, ResourceProvider, Resettab
                         List.of("52.216.0.0/15", "54.231.0.0/16")),
                 awsManagedPrefixList(region, "pl-02cd2c6b", "com.amazonaws." + region + ".dynamodb",
                         List.of("3.218.182.0/24", "52.94.0.0/22"))));
-        if ("aws".equals(AwsRegions.partitionFor(region))) {
+        if (AwsPartitions.commercial().id().equals(AwsRegions.partitionFor(region))) {
             lists.add(awsManagedPrefixList(region, "pl-3b927c52", "com.amazonaws.global.cloudfront.origin-facing",
                     List.of("130.176.0.0/18", "64.252.64.0/18")));
         }
