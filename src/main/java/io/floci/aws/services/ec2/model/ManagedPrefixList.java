@@ -66,7 +66,7 @@ public class ManagedPrefixList {
     public String getRegion() { return region; }
     public void setRegion(String region) { this.region = region; }
 
-    /** AWS-managed lists (the gateway-endpoint service lists) are read-only. */
+    /** AWS-managed lists are read-only. */
     public boolean isAwsManaged() { return awsManaged; }
     public void setAwsManaged(boolean awsManaged) { this.awsManaged = awsManaged; }
 

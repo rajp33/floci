@@ -163,6 +163,9 @@ a colon in that setting. Existing stored namespaces are not migrated or deleted 
   commercial partition; point `FLOCI_SERVICES_LAMBDA_ECR_BASE_URI` at a mirror elsewhere.
 - **WAF `CLOUDFRONT` scope**: available only where CloudFront exists (`aws`, `aws-cn`), and its
   resources live in the partition's implicit global region (`cn-northwest-1` in China).
+- **CloudFront origin-facing prefix list** (`com.amazonaws.global.cloudfront.origin-facing`):
+  served only in the commercial `aws` partition. AWS does not offer it in China, even though
+  CloudFront runs there.
 
 ## What does not change
 

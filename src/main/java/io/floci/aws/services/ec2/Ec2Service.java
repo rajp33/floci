@@ -1927,7 +1927,7 @@ public class Ec2Service implements ContainerTeardown, ResourceProvider, Resettab
     // =========================================================================
 
     /**
-     * Name prefixes AWS reserves for its own gateway-endpoint lists. The trailing dot is part of
+     * Name prefixes AWS reserves for its own managed lists. The trailing dot is part of
      * each: {@code com.amazonaws-probe} is accepted on AWS, so matching without it over-rejects.
      */
     private static final List<String> RESERVED_PREFIX_LIST_NAME_PREFIXES =
@@ -1944,9 +1944,10 @@ public class Ec2Service implements ContainerTeardown, ResourceProvider, Resettab
     }
 
     /**
-     * The managed lists belong to the S3 and DynamoDB gateway endpoints, which are named
-     * {@code com.amazonaws.<region>.<service>} in every partition (the CDK's
-     * {@code GatewayVpcEndpointAwsService}); the reversed-suffix names apply to interface endpoints only.
+     * The S3 and DynamoDB gateway-endpoint lists are named {@code com.amazonaws.<region>.<service>}
+     * in every partition (the CDK's {@code GatewayVpcEndpointAwsService}); the reversed-suffix names
+     * apply to interface endpoints only. The CloudFront origin-facing list exists only in the
+     * commercial partition, although CloudFront also runs in China.
      */
     private List<ManagedPrefixList> awsManagedPrefixLists(String region) {
         List<ManagedPrefixList> lists = new ArrayList<>(defaultAwsManagedPrefixLists(region));
