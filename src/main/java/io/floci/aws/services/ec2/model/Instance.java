@@ -6,8 +6,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -106,6 +108,9 @@ public class Instance {
     // Security-group ingress ports published on the host via socat sidecars:
     // container app port -> allocated host port. Not part of the AWS wire format.
     private Map<Integer, Integer> publishedPorts = new LinkedHashMap<>();
+    // The published ports whose sidecar dials the instance's Docker IPv6 address: with security-group
+    // enforcement on, those only an ingress rule to ::/0 opens. Not part of the AWS wire format.
+    private Set<Integer> ipv6PublishedPorts = new LinkedHashSet<>();
 
     public Instance() {}
 
@@ -271,6 +276,14 @@ public class Instance {
         return publishedPorts;
     }
     public void setPublishedPorts(Map<Integer, Integer> publishedPorts) { this.publishedPorts = publishedPorts; }
+
+    public Set<Integer> getIpv6PublishedPorts() {
+        if (ipv6PublishedPorts == null) {
+            ipv6PublishedPorts = new LinkedHashSet<>();
+        }
+        return ipv6PublishedPorts;
+    }
+    public void setIpv6PublishedPorts(Set<Integer> ipv6PublishedPorts) { this.ipv6PublishedPorts = ipv6PublishedPorts; }
 
     public String getRootVolumeId() { return rootVolumeId; }
     public void setRootVolumeId(String rootVolumeId) { this.rootVolumeId = rootVolumeId; }
